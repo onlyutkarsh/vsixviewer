@@ -22,13 +22,11 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem>{
 
     async getChildren(element?: VsixItem): Promise<VsixItem[]> {
         if (!element) {
-
             Util.instance.log("Getting contents of VSIX");
             let root = await this.parseVsix(this._vsixPath);
             root.children.sort((item1, item2) => {
                 return (item1.isDirectory > item2.isDirectory ? 0 : 1);
             });
-
             return Promise.resolve([root]);
         }
         else {
