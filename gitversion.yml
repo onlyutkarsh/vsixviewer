@@ -1,5 +1,8 @@
-mode: Mainline
+mode: ContinuousDeployment
 next-version: 1.0.0
-branches: {}
+branches:
+  feature:
+    increment: patch
+  master: {}
 ignore:
   sha: []
