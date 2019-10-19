@@ -79,6 +79,7 @@
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
+		"@types/jszip": "~3.1.6",
 		"@types/mocha": "^5.2.7",
 		"@types/node": "^10.14.22",
 		"@types/vscode": "^1.25.0",
@@ -93,7 +94,7 @@
 		"webpack-cli": "~3.3.9"
 	},
 	"dependencies": {
-		"node-stream-zip": "~1.8.2",
+		"jszip": "~3.2.2",
 		"vscode-extension-telemetry": "~0.1.2"
 	}
 }
