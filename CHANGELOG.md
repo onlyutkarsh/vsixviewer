@@ -2,6 +2,6 @@
 
 All notable changes to the "VSIX Viewer" extension will be documented in this file.
 
-## [0.0.1]
+## [1.0.*]
 
 - Initial release
