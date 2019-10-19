@@ -80,7 +80,8 @@
 		"webpack": "npm run compile && webpack --mode development",
 		"webpack-dev": "npm run compile && webpack --mode development --watch --info-verbosity verbose",
 		"compile": "tsc -p ./",
-		"package": "vsce package"
+		"package": "vsce package",
+		"deploy": "vsce publish -p"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
