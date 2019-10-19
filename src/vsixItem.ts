@@ -1,10 +1,9 @@
-import { TreeItem, TreeItemCollapsibleState } from "vscode";
+import { TreeItem, TreeItemCollapsibleState, Uri, ThemeIcon } from "vscode";
 
 export class VsixItem extends TreeItem {
     constructor(public readonly label: string, public collapsibleState: TreeItemCollapsibleState = TreeItemCollapsibleState.None) {
         super(label, collapsibleState);
     }
-
     private _tooltip: string = "";
     get tooltip(): string {
         return this._tooltip;
@@ -34,8 +33,6 @@ export class VsixItem extends TreeItem {
     public set children(v: VsixItem[]) {
         this._children = v;
     }
-
-
     private _iconType: string = "";
     public get iconType(): string {
         return this._iconType;
@@ -45,5 +42,13 @@ export class VsixItem extends TreeItem {
     }
 
 
-    contextValue = 'vsixItem';
+    private _iconPath?: string | Uri | { light: string | Uri; dark: string | Uri; } | ThemeIcon | undefined = "";
+    public get iconPath(): string | Uri | { light: string | Uri; dark: string | Uri; } | ThemeIcon | undefined {
+        return this._iconPath;
+    }
+    public set iconPath(v: string | Uri | { light: string | Uri; dark: string | Uri; } | ThemeIcon | undefined) {
+        this._iconPath = v;
+    }
+
+    contextValue = "vsixItem";
 }

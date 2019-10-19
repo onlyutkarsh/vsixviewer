@@ -17,10 +17,15 @@
 		"url": "https://github.com/onlyutkarsh/vsixviewer.git"
 	},
 	"engines": {
-		"vscode": "^1.25.0"
+		"vscode": "^1.37.0"
 	},
 	"categories": [
 		"Other"
+	],
+	"keywords": [
+		"vsix",
+		"viewer",
+		"explorer"
 	],
 	"license": "MIT",
 	"activationEvents": [
@@ -71,10 +76,10 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "webpack --mode production",
-		"webpack": "webpack --mode development",
-		"webpack-dev": "webpack --mode development --watch",
-		"test-compile": "tsc -p ./",
+		"vscode:prepublish": "npm run compile && webpack --mode production",
+		"webpack": "npm run compile && webpack --mode development",
+		"webpack-dev": "npm run compile && webpack --mode development --watch --info-verbosity verbose",
+		"compile": "tsc -p ./",
 		"package": "vsce package"
 	},
 	"devDependencies": {
@@ -82,14 +87,13 @@
 		"@types/jszip": "~3.1.6",
 		"@types/mocha": "^5.2.7",
 		"@types/node": "^10.14.22",
-		"@types/vscode": "^1.25.0",
+		"@types/vscode": "^1.37.0",
 		"glob": "^7.1.4",
 		"mocha": "^6.1.4",
 		"ts-loader": "~6.2.0",
 		"tslint": "^5.20.0",
 		"typescript": "^3.6.3",
 		"vsce": "~1.68.0",
-		"vscode-test": "^1.2.0",
 		"webpack": "~4.41.2",
 		"webpack-cli": "~3.3.9"
 	},
