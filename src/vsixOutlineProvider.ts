@@ -1,12 +1,11 @@
-/// <reference path="../types/node-stream-zip.d.ts" />
 import * as vscode from 'vscode';
-import * as streamzip from "node-stream-zip";
 import Util from "./util";
 import { TreeItemCollapsibleState } from "vscode";
 import * as path from "path";
 import { VsixItem } from "./vsixItem";
 import * as fs from "fs";
 import TelemetryClient from './telemetryClient';
+import * as jszip from "jszip";
 
 
 export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem>{
@@ -99,6 +98,7 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem>{
     }
 
     async parseVsix(selectedItem: string): Promise<VsixItem> {
+        let that = this;
         let fileName = path.basename(this._vsixPath);
 
         return vscode.window.withProgress({
@@ -106,42 +106,37 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem>{
             title: `Scanning ${fileName}`,
         }, (progress, token) => {
             Util.instance.log(`Selected item: ${selectedItem}`);
-            const zip = new streamzip({
-                file: selectedItem,
-                storeEntries: true
-            });
-
             let root = new VsixItem(fileName, TreeItemCollapsibleState.Expanded);
             root.tooltip = this._vsixPath;
             root.iconType = "vsix";
             root.iconPath = this.getIcon(root.iconType);
             return new Promise<VsixItem>((resolve, reject) => {
-                zip.on("ready", () => {
-                    try {
-                        let startTime = Date.now();
-                        Util.instance.log('Entries read: ' + zip.entriesCount);
-                        let entries = zip.entries();
-                        for (const entry of Object.values(entries)) {
-                            Util.instance.log(`Entry ${entry.name}`);
-                            let path = entry.name.split("/").filter(v => {
-                                return v && v.length > 0;
-                            });
-                            this.buildTree(root, path, entry.isDirectory, 0);
-                        }
-                        zip.close();
-
-                        TelemetryClient.instance.sendEvent("vsixParsedTime", {
-                            ["totalSecondsParsing"]: ((Date.now() - startTime) / 1000).toString()
-                        });
-
-                        resolve(root);
-                    }
-                    catch (err) {
-                        Util.instance.log('Error occurred');
-                        Util.instance.log(err);
+                fs.readFile(this._vsixPath, function (err, data) {
+                    if (err) {
+                        Util.instance.log('Error occurred while reading VSIX');
+                        Util.instance.log(err.message);
                         TelemetryClient.instance.sendError(err);
                         reject(err);
                     }
+                    jszip.loadAsync(data, {
+                        createFolders: true
+                    }).then(zip => {
+                        let files = Object.keys(zip.files);
+                        let startTime = Date.now();
+                        Util.instance.log(`Entries read: ${files.length}`);
+                        files.forEach(entry => {
+                            let file = zip.files[entry];
+                            Util.instance.log(`Entry ${file}`);
+                            let path = file.name.split("/").filter(v => {
+                                return v && v.length > 0;
+                            });
+                            that.buildTree(root, path, file.dir, 0);
+                        });
+                        TelemetryClient.instance.sendEvent("vsixParsingTime", {
+                            ["totalSecondsParsing"]: ((Date.now() - startTime) / 1000).toString()
+                        });
+                        resolve(root);
+                    });
                 });
             });
         });
