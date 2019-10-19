@@ -1,7 +1,6 @@
 "use strict";
 import TelemetryReporter from "vscode-extension-telemetry";
 import * as vscode from "vscode";
-import Util from "./util";
 import { userInfo } from "os";
 import { sep } from "path";
 
@@ -60,7 +59,7 @@ export default class TelemetryClient {
         if (input === null) {
             return input;
         }
-        return input.replace(new RegExp(`\\${sep}${userInfo().username}`, 'g'), `${sep}****`);
+        return input.replace(new RegExp(`\\${sep}${userInfo().username}`, "g"), `${sep}****`);
     }
 
     dispose() {
