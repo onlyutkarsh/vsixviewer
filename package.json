@@ -1,0 +1,105 @@
+{
+	"name": "vsix-viewer",
+	"displayName": "VSIX Viewer",
+	"description": "A simple viewer for VSIX files",
+	"version": "0.0.1",
+	"publisher": "onlyutkarsh",
+	"author": {
+		"name": "Utkarsh Shigihalli"
+	},
+	"icon": "images/icon.png",
+	"galleryBanner": {
+		"color": "#F2F2F2",
+		"theme": "light"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/onlyutkarsh/vsixviewer.git"
+	},
+	"engines": {
+		"vscode": "^1.37.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"vsix",
+		"viewer",
+		"explorer"
+	],
+	"license": "MIT",
+	"activationEvents": [
+		"onCommand:vsixViewer.showInVSIXViewer",
+		"onView:vsixViewer"
+	],
+	"main": "./dist/extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "vsixViewer.showInVSIXViewer",
+				"title": "Show in VSIX Viewer",
+				"when": "resourceScheme == file && resourceExtname == .vsix"
+			}
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "vsixViewer.showInVSIXViewer",
+					"when": "resourceScheme == file && resourceExtname == .vsix"
+				}
+			],
+			"commandPalette": [
+				{
+					"command": "vsixViewer.showInVSIXViewer",
+					"when": "1 == 2"
+				}
+			]
+		},
+		"views": {
+			"explorer": [
+				{
+					"id": "vsixViewer",
+					"name": "VSIX Viewer"
+				}
+			]
+		},
+		"configuration": {
+			"type": "object",
+			"title": "VSIX Viewer",
+			"properties": {
+				"vsixViewer.enableTelemetry": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable usage data and errors to be sent to the developer."
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile && webpack --mode production",
+		"webpack": "npm run compile && webpack --mode development",
+		"webpack-dev": "npm run compile && webpack --mode development --watch --info-verbosity verbose",
+		"compile": "tsc -p ./",
+		"package": "vsce package",
+		"deploy": "vsce publish -p"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/jszip": "~3.1.6",
+		"@types/mocha": "^5.2.7",
+		"@types/node": "^10.14.22",
+		"@types/vscode": "^1.37.0",
+		"glob": "^7.1.4",
+		"mocha": "^6.1.4",
+		"ts-loader": "~6.2.0",
+		"tslint": "^5.20.0",
+		"typescript": "^3.6.3",
+		"vsce": "~1.68.0",
+		"webpack": "~4.41.2",
+		"webpack-cli": "~3.3.9"
+	},
+	"dependencies": {
+		"jszip": "~3.2.2",
+		"vscode-extension-telemetry": "~0.1.2"
+	}
+}
