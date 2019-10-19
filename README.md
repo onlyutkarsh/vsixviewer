@@ -24,3 +24,7 @@ See Change Log [here](CHANGELOG.md)
 ## Issues
 
 If you find any bug or have any suggestion/feature request, please submit the issues to the GitHub repo.
+
+## Credits
+
+Some icons comes from the brilliant [vscode-icons](https://github.com/robertohuertasm/vscode-icons) extension for Visual Studio Code.
