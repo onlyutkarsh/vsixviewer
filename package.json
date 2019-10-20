@@ -25,7 +25,8 @@
 	"keywords": [
 		"vsix",
 		"viewer",
-		"explorer"
+		"explorer",
+		"extension"
 	],
 	"license": "MIT",
 	"activationEvents": [
@@ -93,6 +94,7 @@
 		"mocha": "^6.1.4",
 		"ts-loader": "~6.2.0",
 		"tslint": "^5.20.0",
+		"tslint-webpack-plugin": "~2.1.0",
 		"typescript": "^3.6.3",
 		"vsce": "~1.68.0",
 		"webpack": "~4.41.2",

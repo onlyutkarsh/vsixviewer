@@ -1,7 +1,7 @@
-import * as vscode from 'vscode';
-import { VsixOutlineProvider } from './vsixOutlineProvider';
+import * as vscode from "vscode";
+import { VsixOutlineProvider } from "./vsixOutlineProvider";
 import Util from "./util";
-import TelemetryClient from './telemetryClient';
+import TelemetryClient from "./telemetryClient";
 
 export function activate(context: vscode.ExtensionContext) {
 
