@@ -2,6 +2,7 @@
 
 All notable changes to the "VSIX Viewer" extension will be documented in this file.
 
-## [1.0.*]
+## [#{Release.ReleaseName}#]
 
 - Initial release
+- Minor changes to telemetry
