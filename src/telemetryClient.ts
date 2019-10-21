@@ -47,7 +47,6 @@ export default class TelemetryClient {
             }
             if (this._enabled && this._reporter) {
                 let properties: { [key: string]: string } = {};
-                properties["os"] = process.env.os || "??";
                 error.stack = this.anonymizePaths(error.stack);
                 this._reporter.sendTelemetryException(error, properties);
                 this._lastStackTrackTrace = error.stack;
@@ -64,7 +63,6 @@ export default class TelemetryClient {
 
     dispose() {
         let properties: { [key: string]: string } = {};
-        properties["os"] = process.env.os || "??";
         properties["totalExtensionActiveTime"] = ((Date.now() - startTime) / 1000).toString();
         TelemetryClient.instance.sendEvent("extensionEnded", properties);
 
