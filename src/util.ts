@@ -15,7 +15,9 @@ export default class Util {
         return Util._instance;
     }
 
-    public log(message: string) {
-        this._channel.appendLine(message);
+    public log(message: string | undefined) {
+        if (message) {
+            this._channel.appendLine(message);
+        }
     }
 }

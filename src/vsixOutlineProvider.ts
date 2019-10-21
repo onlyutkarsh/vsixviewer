@@ -31,10 +31,15 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
 
     async getChildren(element?: VsixItem): Promise<VsixItem[]> {
         if (!element) {
-            Util.instance.log("Getting contents of VSIX");
-            let root = await this.parseVsix(this._vsixPath);
-            this.sort(root);
-            return Promise.resolve([root]);
+            try {
+                Util.instance.log("Getting contents of VSIX");
+                let root = await this.parseVsix(this._vsixPath);
+                this.sort(root);
+                return Promise.resolve([root]);
+            } catch (error) {
+                vscode.window.showErrorMessage(`An error ocurred while parsing VSIX: ${error}`);
+                return Promise.resolve([]);
+            }
         }
         else {
             return Promise.resolve(element.children);
@@ -122,9 +127,10 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
                 fs.readFile(this._vsixPath, function (err, data) {
                     if (err) {
                         Util.instance.log("Error occurred while reading VSIX");
-                        Util.instance.log(err.message);
+                        Util.instance.log(err.stack);
                         TelemetryClient.instance.sendError(err);
                         reject(err);
+                        return;
                     }
                     jszip.loadAsync(data, {
                         createFolders: true
