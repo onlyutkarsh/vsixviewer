@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 		TelemetryClient.instance.sendEvent("showInVSIXViewerClicked");
 		const vsixOutlineProvider = new VsixOutlineProvider(context, selectedFile.fsPath);
 		vscode.window.registerTreeDataProvider("vsixViewer", vsixOutlineProvider);
-
+		vsixOutlineProvider.triggerParsing();
 	});
 	context.subscriptions.push(commandReference);
 	Util.instance.log("Command registrations complete");
