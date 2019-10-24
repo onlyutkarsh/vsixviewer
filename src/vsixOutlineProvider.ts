@@ -88,6 +88,9 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
                     if (["txt"].indexOf(contextValue) > -1) {
                         return this.toIcon("text");
                     }
+                    if (["yml", "yaml"].indexOf(contextValue) > -1) {
+                        return this.toIcon("yaml");
+                    }
                     let iconForExtension = this.toIcon(contextValue);
                     if (!iconForExtension) {
                         return this.toIcon("file");
