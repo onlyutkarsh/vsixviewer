@@ -11,5 +11,6 @@ All notable changes to the "VSIX Viewer" extension will be documented in this fi
 - Minor improvements
 
 ### 1.0.0
-
 - Initial release
+
+
