@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showWarningMessage("Please right click on a VSIX file in the Explorer and select 'Show in VSIX Viewer'.");
 			return;
 		}
-		TelemetryClient.instance.sendEvent("showInVSIXViewer");
+		TelemetryClient.instance.sendEvent("showInVSIXViewerClicked");
 		const vsixOutlineProvider = new VsixOutlineProvider(context, selectedFile.fsPath);
 		vscode.window.registerTreeDataProvider("vsixViewer", vsixOutlineProvider);
 
