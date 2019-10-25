@@ -18,6 +18,12 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
         this._context = context;
     }
 
+
+    public triggerParsing() {
+        this._onDidChangeTreeData.fire();
+    }
+
+
     sort(item1: VsixItem) {
         if (item1.isDirectory) {
             item1.children.sort((item1, item2) => {
@@ -48,7 +54,7 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
 
     getTreeItem(element: VsixItem): vscode.TreeItem {
         let extension = path.extname(element.label).replace(".", "");
-        element.iconType = element.isDirectory ? "dir" : extension;
+        element.iconType = element.isDirectory ? (element.iconType === "vsix" ? "vsix" : "dir") : extension;
         element.iconPath = this.getIcon(element.iconType);
         return element;
     }

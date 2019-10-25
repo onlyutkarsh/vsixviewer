@@ -3,7 +3,11 @@
 All notable changes to the "VSIX Viewer" extension will be documented in this file.
 
 ### #{Release.ReleaseName}#
-- Add icons for Powershell (ps1, psd1 and psm1 file extensions)
+- Root node has folder icon instead of vsix icon [Issue #5] 
+- Activate extension only on context menu click [Issue #6]
+
+### 1.0.4
+- Add icons for PowerShell (ps1, psd1 and psm1 file extensions)
 - Add icons for YAML (yaml and yml file extensions)
 
 ### 1.0.3

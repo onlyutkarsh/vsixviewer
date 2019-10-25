@@ -30,8 +30,7 @@
 	],
 	"license": "MIT",
 	"activationEvents": [
-		"onCommand:vsixViewer.showInVSIXViewer",
-		"onView:vsixViewer"
+		"onCommand:vsixViewer.showInVSIXViewer"
 	],
 	"main": "./dist/extension",
 	"contributes": {
