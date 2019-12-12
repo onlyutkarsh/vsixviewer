@@ -1,5 +1,7 @@
 # VSIX Viewer
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/onlyutkarsh/vsixviewer.svg)](https://greenkeeper.io/)
+
 A simple viewer for VSIX files, which lets you see the contents of VSIX files within Visual Studio Code. 
 
 
