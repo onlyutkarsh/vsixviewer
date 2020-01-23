@@ -1,0 +1,13 @@
+trigger:
+  - master
+  
+pool:
+    name: Azure Pipelines
+
+stages:
+  - template: templates/build.yml
+    parameters:
+      stageName: 'build'
+      jobName: 'run on agent'
+      pool:
+        vmImage: 'ubuntu-18.04'
