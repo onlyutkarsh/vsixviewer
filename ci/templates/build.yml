@@ -7,7 +7,7 @@ parameters:
 stages:
 - stage: ${{ parameters.stageName }}
   jobs:
-  - job: ${{ parameters.jobName }}
+  - job: agent
     pool: ${{ parameters.pool }}
     continueOnError: true
     steps:
