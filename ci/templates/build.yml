@@ -1,12 +1,7 @@
 parameters:
-  stageName: ''
-  jobName: ''
   pool: ''
-  env: ''
 
-stages:
-- stage: ${{ parameters.stageName }}
-  jobs:
+jobs:
   - job: agent
     pool: ${{ parameters.pool }}
     continueOnError: true
