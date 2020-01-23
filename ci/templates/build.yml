@@ -14,7 +14,7 @@ stages:
     - task: NodeTool@0
     displayName: 'install nodejs'
     inputs:
-    versionSpec: 10.x
+        versionSpec: 10.x
 
     - task: Npm@1
     displayName: 'install dependencies'
