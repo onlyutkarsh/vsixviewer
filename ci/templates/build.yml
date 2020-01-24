@@ -45,8 +45,9 @@ stages:
             !.vscode/**
         TargetFolder: '$(Build.ArtifactStagingDirectory)/source'
 
-    - publish: $(Build.ArtifactStagingDirectory)/source
-      artifact: 'publish source'
+    - publish: '$(Build.ArtifactStagingDirectory)/source'
+      displayName: 'publish source'
+      artifact: 'source'
 
     - task: CopyFiles@2
       displayName: 'copy vsix'
@@ -56,6 +57,7 @@ stages:
         TargetFolder: '$(Build.ArtifactStagingDirectory)/vsix'
       enabled: false
 
-    - publish: $(Build.ArtifactStagingDirectory)/vsix
-      artifact: 'publish vsix'
+    - publish: '$(Build.ArtifactStagingDirectory)/vsix'
+      displayName: 'publish vsix'
+      artifact: 'vsix'
       
