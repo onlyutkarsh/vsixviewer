@@ -8,6 +8,6 @@ stages:
   - template: templates/build.yml
     parameters:
       stageName: 'build'
-      jobName: 'run on agent'
+      jobName: 'run_on_agent'
       pool:
         vmImage: 'ubuntu-18.04'
