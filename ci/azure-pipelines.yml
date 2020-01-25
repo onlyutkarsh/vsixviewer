@@ -8,6 +8,7 @@ stages:
   - template: templates/build.yml
     parameters:
       stageName: 'build'
-      jobName: 'run_on_agent'
+      jobName: 'hosted'
+      publish: false
       pool:
-        vmImage: 'ubuntu-18.04'
+        vmImage: 'windows-latest'
