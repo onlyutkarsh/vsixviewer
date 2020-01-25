@@ -2,7 +2,7 @@ parameters:
   stageName: ''
   jobName: ''
   pool: ''
-  publish: 'false'
+  publish: false
 
 stages:
 - stage: ${{ parameters.stageName }}
@@ -44,10 +44,10 @@ stages:
             !dist/**
             !.vscode/**
         TargetFolder: '$(Build.ArtifactStagingDirectory)/source'
-      condition: and('${{ parameters.publish }}', true)
+      condition: eq('${{ parameters.publish }}', true)
 
     - publish: '$(Build.ArtifactStagingDirectory)/source'
       displayName: 'publish source'
       artifact: 'source'
-      condition: and('${{ parameters.publish }}', true)
+      condition: eq('${{ parameters.publish }}', true)
       
