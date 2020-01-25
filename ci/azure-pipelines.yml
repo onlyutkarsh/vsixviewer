@@ -8,7 +8,7 @@ stages:
   - template: templates/build.yml
     parameters:
       stageName: 'build_ubuntu_18_04'
-      jobName: 'ubuntu-18.04'
+      jobName: 'ubuntu'
       publish: false
       pool:
         vmImage: 'ubuntu-18.04'
@@ -16,7 +16,7 @@ stages:
   - template: templates/build.yml
     parameters:
       stageName: 'build_windows_latest'
-      jobName: 'hosted'
+      jobName: 'windows'
       publish: true
       pool:
         vmImage: 'windows-latest'
