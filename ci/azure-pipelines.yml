@@ -7,7 +7,7 @@ pool:
 stages:
   - template: templates/build.yml
     parameters:
-      stageName: 'build'
+      stageName: 'build_ubuntu_18_04'
       jobName: 'ubuntu-18.04'
       publish: false
       pool:
@@ -15,7 +15,7 @@ stages:
 
   - template: templates/build.yml
     parameters:
-      stageName: 'build'
+      stageName: 'build_windows_latest'
       jobName: 'hosted'
       publish: true
       pool:
