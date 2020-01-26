@@ -11,7 +11,8 @@ jobs:
         imageName: 'ubuntu-18.04'
       windows:
         imageName: 'windows-latest'
-  pool: $(imageName)
+  pool: 
+    vmImage: $(imageName)
   continueOnError: true
   steps:
   - task: NodeTool@0
