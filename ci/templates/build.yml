@@ -1,36 +1,40 @@
 parameters:
-  stageName: ''
-  jobName: ''
+  jobName: 'build'
   pool: ''
   publish: false
 
-stages:
-- stage: ${{ parameters.stageName }}
-  jobs:
-  - job: ${{ parameters.jobName }}
-    pool: ${{ parameters.pool }}
-    continueOnError: true
-    steps:
-    - task: NodeTool@0
-      displayName: 'install nodejs'
-      inputs:
-        versionSpec: 10.x
+jobs:
+- job: build
+  strategy:
+    matrix:
+      linux:
+        imageName: 'ubuntu-18.04'
+      windows:
+        imageName: 'windows-latest'
+  pool: $(imageName)
+  continueOnError: true
+  steps:
+  - task: NodeTool@0
+    displayName: 'install nodejs'
+    inputs:
+      versionSpec: 10.x
 
-    - task: Npm@1
-      displayName: 'install dependencies'
-      inputs:
-        command: ci
-        workingDir: '$(system.defaultworkingdirectory)'
-        verbose: false
+  - task: Npm@1
+    displayName: 'install dependencies'
+    inputs:
+      command: ci
+      workingDir: '$(system.defaultworkingdirectory)'
+      verbose: false
 
-    - task: Npm@1
-      displayName: 'validate we can create vsix'
-      inputs:
-        command: custom
-        workingDir: '$(system.defaultworkingdirectory)'
-        verbose: false
-        customCommand: 'run package'
+  - task: Npm@1
+    displayName: 'validate we can create vsix'
+    inputs:
+      command: custom
+      workingDir: '$(system.defaultworkingdirectory)'
+      verbose: false
+      customCommand: 'run package'
 
+  - ${{ if eq(variables.imageName, 'windows-latest') }}:
     - task: CopyFiles@2
       displayName: 'copy sources'
       inputs:

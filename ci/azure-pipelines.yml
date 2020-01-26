@@ -5,20 +5,7 @@ pool:
     name: Azure Pipelines
 
 stages:
-  - template: templates/build.yml
-    parameters:
-      stageName: 'ubuntu_18_04'
-      jobName: 'build'
-      publish: false
-      dependsOn: []
-      pool:
-        vmImage: 'ubuntu-18.04'
-
-  - template: templates/build.yml
-    parameters:
-      stageName: 'windows_latest'
-      jobName: 'build'
-      publish: true
-      dependsOn: []
-      pool:
-        vmImage: 'windows-latest'
+  - stage: build
+    displayName: build source
+    jobs:
+      - template: templates\build.yml      
