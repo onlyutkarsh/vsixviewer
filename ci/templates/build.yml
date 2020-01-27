@@ -41,7 +41,7 @@ jobs:
       verbose: false
       customCommand: 'run package'
 
-  - ${{ if eq(variables.imageName, 'windows-latest') }}:
+  - ${{ if and(eq(variables.imageName, 'windows-latest'), eq('${{ parameters.publish }}', true)) }}:
     - task: CopyFiles@2
       displayName: 'copy sources'
       inputs:
@@ -55,10 +55,7 @@ jobs:
             !dist/**
             !.vscode/**
         TargetFolder: '$(Build.ArtifactStagingDirectory)/source'
-      condition: eq('${{ parameters.publish }}', true)
 
     - publish: '$(Build.ArtifactStagingDirectory)/source'
       displayName: 'publish source'
       artifact: 'source'
-      condition: eq('${{ parameters.publish }}', true)
-      

@@ -8,4 +8,6 @@ stages:
   - stage: build
     displayName: build source
     jobs:
-      - template: templates\build.yml      
+      - template: templates\build.yml
+        parameters:
+          publish: true
