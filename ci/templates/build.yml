@@ -41,7 +41,7 @@ jobs:
       verbose: false
       customCommand: 'run package'
 
-  - ${{ if and(eq(variables.imageName, 'windows-latest'), eq(parameters.publish, true)) }}:
+  - ${{ if eq(variables.imageName, 'windows-latest') }}:
     - task: CopyFiles@2
       displayName: 'copy sources'
       inputs:
