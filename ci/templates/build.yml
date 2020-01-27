@@ -15,6 +15,12 @@ jobs:
     vmImage: $(imageName)
   continueOnError: true
   steps:
+  - task: Bash@3
+    displayName: 'print variables'
+    inputs:
+      targetType: 'inline'
+      script: 'env | sort'
+
   - task: NodeTool@0
     displayName: 'install nodejs'
     inputs:
