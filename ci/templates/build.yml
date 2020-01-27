@@ -1,7 +1,7 @@
 parameters:
   jobName: 'build'
   pool: ''
-  publish: false
+  publish: ''
 
 jobs:
 - job: build
@@ -41,7 +41,7 @@ jobs:
       verbose: false
       customCommand: 'run package'
 
-  - ${{ if eq('${{ parameters.publish }}', true) }}:
+  - ${{ if and(eq(variables.imageName, 'windows-latest'), eq(parameters.publish, true)) }}:
     - task: CopyFiles@2
       displayName: 'copy sources'
       inputs:
