@@ -1,0 +1,26 @@
+name: vsixviewer.cicd
+
+on:
+  push:
+    branches: 
+      - 'feature/**' # match an pushes on feature/* and feature/<any sub branch>/*
+
+jobs:
+  build:
+  name: CI
+  runs-on: ubuntu-latest
+  steps:
+    - name: checkout repo
+      uses: actions/checkout@v2
+    
+    - name: setup node
+      uses: actions/setup=node@v1
+      with:
+        node-version: '12.x'
+      
+    - name: clean install dependencies
+      run: npm ci
+
+    - name: compile and create vsix
+      run: npm run package
+
