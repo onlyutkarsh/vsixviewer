@@ -21,9 +21,11 @@ jobs:
         with:
             versionSpec: '5.1.x'
       
-      - name: execute gitversion and print
+      - name: execute gitversion
         id: gitversion # step id used as reference for output values
         uses: gittools/actions/gitversion/execute@v0.9
+        
+      - name: print gitversion
         run: |
           echo "Major: ${{ steps.gitversion.outputs.major }}"
           echo "Minor: ${{ steps.gitversion.outputs.minor }}"
