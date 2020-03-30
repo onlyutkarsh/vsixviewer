@@ -52,3 +52,9 @@ jobs:
       - name: print vsix path
         run: |
           echo "VSIX Path: ${{ env.vsix_path }}"
+
+      - name: upload vsix as artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix
+          path: ${{ env.vsix_path }}
