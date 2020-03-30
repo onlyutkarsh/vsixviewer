@@ -47,8 +47,9 @@ jobs:
       - name: rename vsix to use gitversion
         run: |
           mv "${{ github.workspace }}\vsix-viewer-0.0.1.vsix" "${{github.workspace}}\vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix"
-          echo ::set-env name=vsix_path::${{github.workspace}}\vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix
+        env:
+          vsix_path: ${{github.workspace}}\vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix
         
 
       - name: print vsix path
-        run: echo ${{ vsix_path }}
+        run: echo ${{ env.vsix_path }}
