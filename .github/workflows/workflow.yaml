@@ -6,9 +6,6 @@ on:
       - 'feature/**' # match an pushes on feature/* and feature/<any sub branch>/*
 
 jobs:
-  env:
-    vsix_path: ''
-
   build:
     name: build
     runs-on: windows-latest
@@ -50,9 +47,7 @@ jobs:
       - name: rename vsix to use gitversion
         run: |
           mv "${{ github.workspace }}\vsix-viewer-0.0.1.vsix" "${{github.workspace}}\vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix"
-        env:
-          vsix_path: ${{github.workspace}}\vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix
-        
+          echo "::set-env name=vsix_path::${{github.workspace}}\vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix"
 
       - name: print vsix path
         run: |
