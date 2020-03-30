@@ -1,4 +1,4 @@
-name: vsixviewer.cicd
+name: vsixviewer
 
 on:
   push:
@@ -8,11 +8,29 @@ on:
 jobs:
   build:
     name: build
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: checkout repo
         uses: actions/checkout@v2
+
+      - name: fetch all history and tags from all branches for gitversion
+        run: git fetch --prune --unshallow
+
+      - name: install gitversion tool
+        uses: gittools/actions/gitversion/setup@v0.9
+        with:
+            versionSpec: '5.1.x'
       
+      - name: execute gitversion and print
+        id: gitversion # step id used as reference for output values
+        uses: gittools/actions/gitversion/execute@v0.9
+        run: |
+          echo "Major: ${{ steps.gitversion.outputs.major }}"
+          echo "Minor: ${{ steps.gitversion.outputs.minor }}"
+          echo "Patch: ${{ steps.gitversion.outputs.patch }}"
+          echo "MajorMinorPatch: ${{ steps.gitversion.outputs.majorMinorPatch }}"
+          echo "SemVer: ${{ steps.gitversion.outputs.semVer }}"
+
       - name: setup node
         uses: actions/setup-node@v1
         with:
@@ -24,3 +42,12 @@ jobs:
       - name: compile and create vsix
         run: npm run package
 
+      - name: rename vsix to use gitversion
+        id: renamevsix
+        run: |
+          mv "${{ github.workspace }}/vsix-viewer-0.0.1.vsix" "${{github.workspace}}/vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix"
+        env:
+          vsix_path: ${{github.workspace}}/vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix
+
+      - name: print vsix path
+        run: echo ${{ steps.renamevsix.vsix_path}}
