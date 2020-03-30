@@ -45,11 +45,10 @@ jobs:
         run: npm run package
 
       - name: rename vsix to use gitversion
-        id: renamevsix
         run: |
-          mv "${{ github.workspace }}/vsix-viewer-0.0.1.vsix" "${{github.workspace}}/vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix"
-        env:
-          vsix_path: ${{github.workspace}}/vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix
+          mv "${{ github.workspace }}\vsix-viewer-0.0.1.vsix" "${{github.workspace}}\vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix"
+          echo ::set-env name=vsix_path::${{github.workspace}}\vsix-viewer-${{steps.gitversion.outputs.semVer}}.vsix
+        
 
       - name: print vsix path
-        run: echo ${{ steps.renamevsix.vsix_path}}
+        run: echo ${{ env.vsix_path }}
