@@ -52,4 +52,5 @@ jobs:
         
 
       - name: print vsix path
-        run: echo ${{ env.vsix_path }}
+        run: |
+          echo "VSIX Path: ${{ env.vsix_path }}"
