@@ -49,10 +49,10 @@ jobs:
         uses: onlyutkarsh/patch-files-action@v1.0.0
         with:
           files: '${{github.workspace}}/package.json'
-        patch-syntax: |
-          = /version => "${{ steps.gitversion.outputs.semVer }}"
-          = /displayName => "VSIX Viewer"
-          = /description => "A simple viewer for VSIX files, which lets you see the contents of VSIX files within Visual Studio Code."
+          patch-syntax: |
+            = /version => "${{ steps.gitversion.outputs.semVer }}"
+            = /displayName => "VSIX Viewer"
+            = /description => "A simple viewer for VSIX files, which lets you see the contents of VSIX files within Visual Studio Code."
       
       - name: add version in CHANGELOG.md
         uses: cschleiden/replace-tokens@v1.0
