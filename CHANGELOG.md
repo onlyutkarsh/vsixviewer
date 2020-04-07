@@ -2,7 +2,8 @@
 
 All notable changes to the "VSIX Viewer" extension will be documented in this file.
 
-### #{Release.ReleaseName}#
+### #{VERSION}#
+- Move CI to GitHub Actions
 - Root node has folder icon instead of vsix icon [Issue #5] 
 - Activate extension only on context menu click [Issue #6]
 
