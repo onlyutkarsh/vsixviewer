@@ -100,7 +100,7 @@
 		"webpack-cli": "~3.3.9"
 	},
 	"dependencies": {
-		"jszip": "~3.2.2",
+		"jszip": "~3.7.0",
 		"vscode-extension-telemetry": "~0.1.2"
 	}
 }
