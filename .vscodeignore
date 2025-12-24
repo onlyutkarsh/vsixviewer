@@ -1,6 +1,5 @@
 .vscode/**
 .vscode-test/**
-out
 src
 .gitignore
 vsc-extension-quickstart.md
@@ -12,3 +11,5 @@ marketplace
 webpack.config.js
 node_modules
 .claude/
+.github/
+*.vsix
