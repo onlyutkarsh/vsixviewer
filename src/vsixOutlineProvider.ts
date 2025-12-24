@@ -28,8 +28,8 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
     public updateBadge() {
         if (this._treeView) {
             const count = this._vsixFiles.size;
-            const config = vscode.workspace.getConfiguration('vsixViewer');
-            const showBadge = config.get<boolean>('showBadge', true);
+            const config = vscode.workspace.getConfiguration("vsixViewer");
+            const showBadge = config.get<boolean>("showBadge", true);
 
             if (showBadge) {
                 this._treeView.badge = {
@@ -40,7 +40,7 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
                 this._treeView.badge = undefined;
             }
 
-            this._logger.logInfo(`Updated badge: ${showBadge ? count : 'disabled'}`);
+            this._logger.logInfo(`Updated badge: ${showBadge ? count : "disabled"}`);
         }
     }
 

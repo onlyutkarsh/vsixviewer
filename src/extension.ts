@@ -24,7 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// Listen for configuration changes
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('vsixViewer.showBadge')) {
+			if (e.affectsConfiguration("vsixViewer.showBadge")) {
 				logger.logInfo("Badge setting changed, updating view...");
 				vsixOutlineProvider.updateBadge();
 			}
@@ -36,13 +36,13 @@ export function activate(context: vscode.ExtensionContext) {
 		logger.logInfo(`Found ${vsixFiles.length} VSIX file(s) in workspace`);
 
 		// Set context for view welcome
-		vscode.commands.executeCommand('setContext', 'vsixViewer.hasFiles', vsixFiles.length > 0);
+		vscode.commands.executeCommand("setContext", "vsixViewer.hasFiles", vsixFiles.length > 0);
 
 		if (vsixFiles.length > 0) {
 			await vsixOutlineProvider.loadVsixFiles(vsixFiles);
 			vscode.window.setStatusBarMessage(`VSIX Viewer: Found ${vsixFiles.length} file(s)`, 5000);
 		} else {
-			vscode.window.setStatusBarMessage('VSIX Viewer: No VSIX files found in workspace', 5000);
+			vscode.window.setStatusBarMessage("VSIX Viewer: No VSIX files found in workspace", 5000);
 		}
 	});
 
@@ -52,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
 	fileWatcher.onDidCreate(async () => {
 		logger.logInfo("New VSIX file detected, refreshing...");
 		const vsixFiles = await scanWorkspaceForVsixFiles();
-		vscode.commands.executeCommand('setContext', 'vsixViewer.hasFiles', vsixFiles.length > 0);
+		vscode.commands.executeCommand("setContext", "vsixViewer.hasFiles", vsixFiles.length > 0);
 		await vsixOutlineProvider.loadVsixFiles(vsixFiles);
 		vscode.window.setStatusBarMessage(`VSIX Viewer: Found ${vsixFiles.length} file(s)`, 3000);
 	});
@@ -60,7 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
 	fileWatcher.onDidDelete(async () => {
 		logger.logInfo("VSIX file deleted, refreshing...");
 		const vsixFiles = await scanWorkspaceForVsixFiles();
-		vscode.commands.executeCommand('setContext', 'vsixViewer.hasFiles', vsixFiles.length > 0);
+		vscode.commands.executeCommand("setContext", "vsixViewer.hasFiles", vsixFiles.length > 0);
 		await vsixOutlineProvider.loadVsixFiles(vsixFiles);
 		vscode.window.setStatusBarMessage(`VSIX Viewer: Found ${vsixFiles.length} file(s)`, 3000);
 	});
@@ -71,13 +71,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand("vsixViewer.refresh", async () => {
 			const vsixFiles = await scanWorkspaceForVsixFiles();
-			vscode.commands.executeCommand('setContext', 'vsixViewer.hasFiles', vsixFiles.length > 0);
+			vscode.commands.executeCommand("setContext", "vsixViewer.hasFiles", vsixFiles.length > 0);
 			await vsixOutlineProvider.loadVsixFiles(vsixFiles);
 
 			if (vsixFiles.length > 0) {
 				vscode.window.showInformationMessage(`VSIX Viewer: Found ${vsixFiles.length} file(s)`);
 			} else {
-				vscode.window.showInformationMessage('VSIX Viewer: No VSIX files found in workspace');
+				vscode.window.showInformationMessage("VSIX Viewer: No VSIX files found in workspace");
 			}
 		})
 	);
