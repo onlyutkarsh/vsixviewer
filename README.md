@@ -3,7 +3,7 @@
 A simple viewer for VSIX files, which lets you see the contents of VSIX files within Visual Studio Code.
 
 
-![viewer](marketplace/demo.gif)
+![demo](https://raw.githubusercontent.com/onlyutkarsh/vsixviewer/main/marketplace/demo.gif)
 
 ## Features
 
@@ -37,16 +37,7 @@ You can control whether the file count badge is displayed in the VSIX Viewer pan
 }
 ```
 
-Set to `false` to hide the badge. 
-
-## Telemetry data
-
-By default, anonymous usage and error data collection is turned on to understand user behaviour to improve this extension. To disable it, update the `settings.json` as below:
-```json
-{
-    "vsixViewer.enableTelemetry": false
-}
-```
+Set to `false` to hide the badge.
 
 ## Change Log
 
