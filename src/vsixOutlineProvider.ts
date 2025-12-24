@@ -13,10 +13,12 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
     private _context: vscode.ExtensionContext;
     private _logger = Logger.instance;
     private _treeView: vscode.TreeView<VsixItem> | undefined;
+    private _extensionIconMap: Map<string, string> = new Map();
 
     constructor(context: vscode.ExtensionContext) {
         this._logger.logInfo("VsixOutlineProvider initialized");
         this._context = context;
+        this.loadIconConfiguration();
     }
 
     public setTreeView(treeView: vscode.TreeView<VsixItem>) {
@@ -197,34 +199,32 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
         switch (contextValue) {
             case "dir":
                 {
-                    return vscode.ThemeIcon.Folder;
+                    const folderIcon = this.resolveIconFromConfig("dir");
+                    return folderIcon ?? vscode.ThemeIcon.Folder;
                 }
             default:
                 {
-                    //icon based on extension
-                    if (["png", "gif", "jpg", "jpeg", "bmp"].indexOf(contextValue) > -1) {
-                        return this.toIcon("image");
+                    const mappedIcon = this.resolveIconFromConfig(contextValue);
+                    if (mappedIcon) {
+                        return mappedIcon;
                     }
-                    if (["md", "markdown"].indexOf(contextValue) > -1) {
-                        return this.toIcon("markdown");
-                    }
-                    if (["gitignore"].indexOf(contextValue) > -1) {
-                        return this.toIcon("git");
-                    }
-                    if (["txt"].indexOf(contextValue) > -1) {
-                        return this.toIcon("text");
-                    }
-                    if (["yml", "yaml"].indexOf(contextValue) > -1) {
-                        return this.toIcon("yaml");
-                    }
-                    let iconForExtension = this.toIcon(contextValue);
-                    if (!iconForExtension) {
-                        return this.toIcon("file");
-                    }
-                    return iconForExtension;
+                    const iconForExtension = this.toIcon(contextValue);
+                    return iconForExtension ?? this.toIcon("file");
                 }
         }
     }
+
+    private resolveIconFromConfig(extension: string): string | vscode.Uri | { light: vscode.Uri; dark: vscode.Uri; } | vscode.ThemeIcon | undefined {
+        if (!extension) {
+            return undefined;
+        }
+        const iconName = this._extensionIconMap.get(extension.toLowerCase());
+        if (!iconName) {
+            return undefined;
+        }
+        return this.toIcon(iconName);
+    }
+
     toIcon(extension: string): string | vscode.Uri | { light: vscode.Uri; dark: vscode.Uri; } | vscode.ThemeIcon | undefined {
         let lightPath = this._context.asAbsolutePath(path.join("images", "light", `${extension}.svg`));
         let darkPath = this._context.asAbsolutePath(path.join("images", "dark", `${extension}.svg`));
@@ -236,6 +236,31 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
             };
         }
         return;
+    }
+
+    private loadIconConfiguration(): void {
+        const configPath = this._context.asAbsolutePath(path.join("images", "icons.json"));
+        try {
+            if (!fs.existsSync(configPath)) {
+                this._logger.logInfo(`Icon configuration not found at ${configPath}`);
+                return;
+            }
+            const raw = fs.readFileSync(configPath, "utf8");
+            const config = JSON.parse(raw) as { groups?: Array<{ icon: string; extensions: string[] }>; };
+            config.groups?.forEach(group => {
+                if (!group?.icon || !Array.isArray(group.extensions)) {
+                    return;
+                }
+                group.extensions.forEach(extension => {
+                    if (typeof extension === "string" && extension.trim().length > 0) {
+                        this._extensionIconMap.set(extension.toLowerCase(), group.icon);
+                    }
+                });
+            });
+            this._logger.logInfo(`Loaded ${this._extensionIconMap.size} icon mappings`);
+        } catch (error) {
+            this._logger.logError("Failed to load icon configuration", error as Error);
+        }
     }
 
     private async loadZip(vsixPath: string): Promise<jszip> {

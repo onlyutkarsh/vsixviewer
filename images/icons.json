@@ -1,0 +1,123 @@
+{
+	"groups": [
+		{
+			"icon": "vsix",
+			"extensions": [
+				"vsix"
+			]
+		},
+		{
+			"icon": "vsixmanifest",
+			"extensions": [
+				"vsixmanifest"
+			]
+		},
+		{
+			"icon": "json",
+			"extensions": [
+				"json",
+				"jsonc"
+			]
+		},
+		{
+			"icon": "js",
+			"extensions": [
+				"js",
+				"mjs",
+				"cjs"
+			]
+		},
+		{
+			"icon": "typscript",
+			"extensions": [
+				"ts",
+				"tsx"
+			]
+		},
+		{
+			"icon": "html",
+			"extensions": [
+				"html",
+				"htm"
+			]
+		},
+		{
+			"icon": "image",
+			"extensions": [
+				"png",
+				"gif",
+				"jpg",
+				"jpeg",
+				"bmp",
+				"webp"
+			]
+		},
+		{
+			"icon": "svg",
+			"extensions": [
+				"svg"
+			]
+		},
+		{
+			"icon": "markdown",
+			"extensions": [
+				"md",
+				"markdown"
+			]
+		},
+		{
+			"icon": "yaml",
+			"extensions": [
+				"yml",
+				"yaml"
+			]
+		},
+		{
+			"icon": "xml",
+			"extensions": [
+				"xml"
+			]
+		},
+		{
+			"icon": "text",
+			"extensions": [
+				"txt",
+				"log",
+				"license",
+				"licence"
+			]
+		},
+		{
+			"icon": "git",
+			"extensions": [
+				"gitignore",
+				"gitattributes",
+				"gitmodules"
+			]
+		},
+		{
+			"icon": "ps1",
+			"extensions": [
+				"ps1"
+			]
+		},
+		{
+			"icon": "psm1",
+			"extensions": [
+				"psm1"
+			]
+		},
+		{
+			"icon": "psd1",
+			"extensions": [
+				"psd1"
+			]
+		},
+		{
+			"icon": "folder",
+			"extensions": [
+				"dir"
+			]
+		}
+	]
+}
