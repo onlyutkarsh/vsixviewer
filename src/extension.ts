@@ -21,6 +21,26 @@ export function activate(context: vscode.ExtensionContext) {
 	vsixOutlineProvider.setTreeView(treeView);
 	context.subscriptions.push(treeView);
 
+	// Register the content provider once for all files
+	const contentMap = new Map<string, Uint8Array>();
+	const contentProvider = new class implements vscode.TextDocumentContentProvider {
+		provideTextDocumentContent(uri: vscode.Uri): string {
+			const content = contentMap.get(uri.toString());
+			if (!content) {
+				return "[File content not available]";
+			}
+
+			// Try to decode as UTF-8 text
+			try {
+				return new TextDecoder().decode(content);
+			} catch {
+				const fileName = new URLSearchParams(uri.query).get("name") || "file";
+				return `[Binary file: ${fileName}]\n\nThis file appears to be binary and cannot be displayed as text.\nSize: ${content.length} bytes`;
+			}
+		}
+	};
+	context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider("vsix-content", contentProvider));
+
 	// Listen for configuration changes
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration(e => {
@@ -82,8 +102,22 @@ export function activate(context: vscode.ExtensionContext) {
 		})
 	);
 
+	// Clean up content map when documents are closed
+	context.subscriptions.push(
+		vscode.workspace.onDidCloseTextDocument(doc => {
+			if (doc.uri.scheme === "vsix-content") {
+				const uriString = doc.uri.toString();
+				const content = contentMap.get(uriString);
+				if (content && contentMap.delete(uriString)) {
+					const sizeMB = content.length / (1024 * 1024);
+					logger.logInfo(`Freed ${sizeMB.toFixed(2)} MB from memory (${contentMap.size} files still open)`);
+				}
+			}
+		})
+	);
+
 	// Command to open a file from the tree view
-	let openFileCommand = vscode.commands.registerCommand("vsixViewer.openFile", async (item: any) => {
+	const openFileCommand = vscode.commands.registerCommand("vsixViewer.openFile", async (item: any) => {
 		try {
 			const content = await vsixOutlineProvider.getFileContent(item);
 			if (!content) {
@@ -91,41 +125,39 @@ export function activate(context: vscode.ExtensionContext) {
 				return;
 			}
 
-			// Create a virtual document to display the content
-			const fileName = item.label;
-			const uri = vscode.Uri.parse(`vsix-content:${item.fullPath}?name=${encodeURIComponent(fileName)}`);
+			const vsixPath = vsixOutlineProvider.getVsixPathForItem(item);
+			if (!vsixPath) {
+				vscode.window.showErrorMessage("Could not determine VSIX file for item");
+				return;
+			}
 
-			// Register a text document content provider for this virtual document
-			const provider = new class implements vscode.TextDocumentContentProvider {
-				provideTextDocumentContent(): string {
-					// Try to decode as UTF-8 text
-					try {
-						return new TextDecoder().decode(content);
-					} catch {
-						return `[Binary file: ${fileName}]\n\nThis file appears to be binary and cannot be displayed as text.\nSize: ${content.length} bytes`;
-					}
+			// Warn about large files (> 5MB)
+			const fileSizeMB = content.length / (1024 * 1024);
+			if (fileSizeMB > 5) {
+				const proceed = await vscode.window.showWarningMessage(
+					`This file is ${fileSizeMB.toFixed(1)} MB. Opening large files may use significant memory. Continue?`,
+					{ modal: true },
+					"Open Anyway"
+				);
+				if (proceed !== "Open Anyway") {
+					return;
 				}
-			};
+			}
 
-			context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider("vsix-content", provider));
+			// Create a unique virtual document URI including the VSIX path to avoid collisions
+			const fileName = item.label;
+			const vsixHash = Buffer.from(vsixPath).toString("base64").replace(/[/+=]/g, "_");
+			const uri = vscode.Uri.parse(`vsix-content:${vsixHash}/${item.fullPath}?name=${encodeURIComponent(fileName)}&vsix=${encodeURIComponent(vsixPath)}`);
+
+			// Store the content in the map for the provider to access
+			contentMap.set(uri.toString(), content);
+			logger.logInfo(`Loaded ${fileSizeMB.toFixed(2)} MB into memory for ${fileName}`);
 
 			const doc = await vscode.workspace.openTextDocument(uri);
 			await vscode.window.showTextDocument(doc, {
 				preview: true,
 				preserveFocus: false
 			});
-
-			// Make the document read-only by listening to text changes and preventing them
-			context.subscriptions.push(
-				vscode.workspace.onDidChangeTextDocument(e => {
-					if (e.document.uri.scheme === "vsix-content") {
-						// Show a message that the file is read-only
-						if (e.contentChanges.length > 0) {
-							vscode.window.showWarningMessage("This file is read-only (from VSIX archive)");
-						}
-					}
-				})
-			);
 		} catch (error) {
 			logger.logError("Failed to open file", error as Error);
 			vscode.window.showErrorMessage(`Failed to open file: ${error}`);

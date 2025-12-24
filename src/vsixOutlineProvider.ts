@@ -14,6 +14,7 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
     private _logger = Logger.instance;
     private _treeView: vscode.TreeView<VsixItem> | undefined;
     private _extensionIconMap: Map<string, string> = new Map();
+    private _iconCache: Map<string, { light: vscode.Uri; dark: vscode.Uri; } | undefined> = new Map();
 
     constructor(context: vscode.ExtensionContext) {
         this._logger.logInfo("VsixOutlineProvider initialized");
@@ -92,6 +93,16 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
         return undefined;
     }
 
+    public getVsixPathForItem(item: VsixItem): string | undefined {
+        // Find which VSIX this item belongs to and return its path
+        for (const [vsixPath, data] of this._vsixFiles.entries()) {
+            if (this.itemBelongsToRoot(item, data.root)) {
+                return vsixPath;
+            }
+        }
+        return undefined;
+    }
+
     private itemBelongsToRoot(item: VsixItem, root: VsixItem): boolean {
         let current: VsixItem | undefined = item;
         while (current) {
@@ -132,18 +143,6 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
         this._onDidChangeTreeData.fire(undefined);
     }
 
-
-    sort(item1: VsixItem) {
-        if (item1.isDirectory) {
-            item1.children.sort((item1, item2) => {
-                return (item1.isDirectory > item2.isDirectory ? -1 : 1);
-            });
-            item1.children.forEach(child => {
-                this.sort(child);
-            });
-        }
-    }
-
     async getChildren(element?: VsixItem): Promise<VsixItem[]> {
         if (!element) {
             // Return all VSIX roots
@@ -178,13 +177,31 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
     buildTree(rootItem: VsixItem, entryPath: string[], isDirectory: boolean, index: number, fullPath: string) {
 
         if (index < entryPath.length) {
-            let item = entryPath[index];
+            const item = entryPath[index];
             let exists = rootItem.children.find(child => child.label === item);
             if (!exists) {
                 exists = new VsixItem(item);
                 exists.collapsibleState = isDirectory ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None;
                 exists.isDirectory = isDirectory;
-                rootItem.children.push(exists);
+
+                // Insert in sorted order: directories first, then alphabetically
+                const insertIndex = rootItem.children.findIndex(child => {
+                    // If exists is a directory and child is a file, insert before
+                    if (exists!.isDirectory && !child.isDirectory) {
+                        return true;
+                    }
+                    // If both are same type (both dirs or both files), compare labels
+                    if (exists!.isDirectory === child.isDirectory) {
+                        return exists!.label.localeCompare(child.label) < 0;
+                    }
+                    return false;
+                });
+
+                if (insertIndex === -1) {
+                    rootItem.children.push(exists);
+                } else {
+                    rootItem.children.splice(insertIndex, 0, exists);
+                }
             }
 
             // Set fullPath for files (when we're at the last element)
@@ -226,16 +243,26 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
     }
 
     toIcon(extension: string): string | vscode.Uri | { light: vscode.Uri; dark: vscode.Uri; } | vscode.ThemeIcon | undefined {
-        let lightPath = this._context.asAbsolutePath(path.join("images", "light", `${extension}.svg`));
-        let darkPath = this._context.asAbsolutePath(path.join("images", "dark", `${extension}.svg`));
+        // Check cache first
+        if (this._iconCache.has(extension)) {
+            return this._iconCache.get(extension);
+        }
 
+        // Check if icon files exist
+        const lightPath = this._context.asAbsolutePath(path.join("images", "light", `${extension}.svg`));
+        const darkPath = this._context.asAbsolutePath(path.join("images", "dark", `${extension}.svg`));
+
+        let result: { light: vscode.Uri; dark: vscode.Uri; } | undefined = undefined;
         if (fs.existsSync(lightPath) && fs.existsSync(darkPath)) {
-            return {
+            result = {
                 light: vscode.Uri.file(lightPath),
                 dark: vscode.Uri.file(darkPath)
             };
         }
-        return;
+
+        // Cache the result (even if undefined to avoid repeated fs checks)
+        this._iconCache.set(extension, result);
+        return result;
     }
 
     private loadIconConfiguration(): void {
@@ -269,15 +296,14 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
     }
 
     async parseVsix(selectedItem: string): Promise<VsixItem> {
-        let that = this;
-        let fileName = path.basename(selectedItem);
+        const fileName = path.basename(selectedItem);
 
         return vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
             title: `Scanning ${fileName}`,
         }, () => {
             this._logger.logInfo(`Selected item: ${selectedItem}`);
-            let root = new VsixItem(fileName, TreeItemCollapsibleState.Expanded);
+            const root = new VsixItem(fileName, TreeItemCollapsibleState.Expanded);
             root.isDirectory = true;
             root.tooltip = selectedItem;
             root.iconType = "vsix";
@@ -292,18 +318,20 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
                     jszip.loadAsync(data, {
                         createFolders: true
                     }).then(zip => {
-                        let files = Object.keys(zip.files);
+                        const files = Object.keys(zip.files);
                         this._logger.logInfo(`Entries read: ${files.length}`);
                         files.forEach(entry => {
-                            let file = zip.files[entry];
+                            const file = zip.files[entry];
                             this._logger.logDebug("ParseVsix", `Entry ${file.name}`);
-                            let pathArray = file.name.split("/").filter(v => {
+                            const pathArray = file.name.split("/").filter(v => {
                                 return v && v.length > 0;
                             });
-                            that.buildTree(root, pathArray, file.dir, 0, file.name);
+                            this.buildTree(root, pathArray, file.dir, 0, file.name);
                         });
-                        that.sort(root);
                         resolve(root);
+                    }).catch(err => {
+                        this._logger.logError("Error occurred while parsing VSIX zip file", err);
+                        reject(err);
                     });
                 });
             });
