@@ -32,7 +32,7 @@
 	"activationEvents": [
 		"onCommand:vsixViewer.showInVSIXViewer"
 	],
-	"main": "./dist/extension",
+	"main": "./out/extension",
 	"contributes": {
 		"commands": [
 			{
@@ -66,41 +66,38 @@
 		"configuration": {
 			"type": "object",
 			"title": "VSIX Viewer",
-			"properties": {
-				"vsixViewer.enableTelemetry": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enable usage data and errors to be sent to the developer."
-				}
-			}
+			"properties": {}
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile && webpack --mode production",
-		"webpack": "npm run compile && webpack --mode development",
-		"webpack-dev": "npm run compile && webpack --mode development --watch --info-verbosity verbose",
+		"vscode:prepublish": "npm run -S esbuild-base -- --minify",
+		"esbuild-base": "rimraf out && esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+		"esbuild": "npm run -S esbuild-base -- --sourcemap",
+		"esbuild-watch": "npm run -S esbuild-base -- --sourcemap --watch",
 		"compile": "tsc -p ./",
-		"package": "vsce package",
-		"deploy": "vsce publish -p"
+		"watch": "tsc -watch -p ./",
+		"lint": "eslint src --ext ts",
+		"package": "@vscode/vsce package",
+		"deploy": "@vscode/vsce publish -p",
+		"publish:ovsx": "ovsx publish"
 	},
 	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/jszip": "~3.1.6",
-		"@types/mocha": "^5.2.7",
-		"@types/node": "^12.12.17",
-		"@types/vscode": "^1.37.0",
-		"glob": "^7.1.4",
-		"mocha": "^6.1.4",
-		"ts-loader": "~6.2.0",
-		"tslint": "^5.20.0",
-		"tslint-webpack-plugin": "~2.1.0",
-		"typescript": "^3.6.3",
-		"vsce": "~1.71.0",
-		"webpack": "~4.41.2",
-		"webpack-cli": "~3.3.9"
+		"@types/mocha": "^10.0.10",
+		"@types/node": "^25.0.3",
+		"@types/vscode": "^1.107.0",
+		"@typescript-eslint/eslint-plugin": "^8.19.1",
+		"@typescript-eslint/parser": "^8.19.1",
+		"@vscode/vsce": "^3.2.1",
+		"esbuild": "^0.27.1",
+		"eslint": "^9.17.0",
+		"glob": "^13.0.0",
+		"mocha": "^11.7.5",
+		"ovsx": "^0.10.7",
+		"rimraf": "^6.1.2",
+		"shx": "^0.4.0",
+		"typescript": "^5.9.3"
 	},
 	"dependencies": {
-		"jszip": "~3.2.2",
-		"vscode-extension-telemetry": "~0.1.2"
+		"jszip": "~3.10.1"
 	}
 }

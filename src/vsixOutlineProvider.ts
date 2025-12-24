@@ -1,26 +1,26 @@
 import * as vscode from "vscode";
-import Util from "./util";
+import { Logger } from "./util/logger";
 import { TreeItemCollapsibleState } from "vscode";
 import * as path from "path";
 import { VsixItem } from "./vsixItem";
 import * as fs from "fs";
-import TelemetryClient from "./telemetryClient";
 import * as jszip from "jszip";
 
 export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
-    private _onDidChangeTreeData: vscode.EventEmitter<VsixItem> = new vscode.EventEmitter<VsixItem>();
-    readonly onDidChangeTreeData: vscode.Event<VsixItem> = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData: vscode.EventEmitter<VsixItem | undefined | null | void> = new vscode.EventEmitter<VsixItem | undefined | null | void>();
+    readonly onDidChangeTreeData: vscode.Event<VsixItem | undefined | null | void> = this._onDidChangeTreeData.event;
     private _vsixPath: string;
     private _context: vscode.ExtensionContext;
+    private _logger = Logger.instance;
     constructor(context: vscode.ExtensionContext, vsixPath: string) {
-        Util.instance.log("VsixOutlineProvider initialized");
+        this._logger.logInfo("VsixOutlineProvider initialized");
         this._vsixPath = vsixPath;
         this._context = context;
     }
 
 
     public triggerParsing() {
-        this._onDidChangeTreeData.fire();
+        this._onDidChangeTreeData.fire(undefined);
     }
 
 
@@ -38,7 +38,7 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
     async getChildren(element?: VsixItem): Promise<VsixItem[]> {
         if (!element) {
             try {
-                Util.instance.log("Getting contents of VSIX");
+                this._logger.logInfo("Getting contents of VSIX");
                 let root = await this.parseVsix(this._vsixPath);
                 this.sort(root);
                 return Promise.resolve([root]);
@@ -73,7 +73,7 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
             this.buildTree(exists, entryPath, isDirectory, index + 1);
         }
     }
-    getIcon(contextValue: string): string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri; } | vscode.ThemeIcon | undefined {
+    getIcon(contextValue: string): string | vscode.Uri | { light: vscode.Uri; dark: vscode.Uri; } | vscode.ThemeIcon | undefined {
         switch (contextValue) {
             case "dir":
                 {
@@ -105,14 +105,14 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
                 }
         }
     }
-    toIcon(extension: string): string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri; } | vscode.ThemeIcon | undefined {
+    toIcon(extension: string): string | vscode.Uri | { light: vscode.Uri; dark: vscode.Uri; } | vscode.ThemeIcon | undefined {
         let lightPath = this._context.asAbsolutePath(path.join("images", "light", `${extension}.svg`));
         let darkPath = this._context.asAbsolutePath(path.join("images", "dark", `${extension}.svg`));
 
         if (fs.existsSync(lightPath) && fs.existsSync(darkPath)) {
             return {
-                light: this._context.asAbsolutePath(path.join("images", "light", `${extension}.svg`)),
-                dark: this._context.asAbsolutePath(path.join("images", "dark", `${extension}.svg`))
+                light: vscode.Uri.file(lightPath),
+                dark: vscode.Uri.file(darkPath)
             };
         }
         return;
@@ -126,18 +126,16 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
             location: vscode.ProgressLocation.Notification,
             title: `Scanning ${fileName}`,
         }, () => {
-            Util.instance.log(`Selected item: ${selectedItem}`);
+            this._logger.logInfo(`Selected item: ${selectedItem}`);
             let root = new VsixItem(fileName, TreeItemCollapsibleState.Expanded);
             root.isDirectory = true;
             root.tooltip = this._vsixPath;
             root.iconType = "vsix";
             root.iconPath = this.getIcon(root.iconType);
             return new Promise<VsixItem>((resolve, reject) => {
-                fs.readFile(this._vsixPath, function (err, data) {
+                fs.readFile(this._vsixPath, (err, data) => {
                     if (err) {
-                        Util.instance.log("Error occurred while reading VSIX");
-                        Util.instance.log(err.stack);
-                        TelemetryClient.instance.sendError(err);
+                        this._logger.logError("Error occurred while reading VSIX", err);
                         reject(err);
                         return;
                     }
@@ -145,12 +143,11 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
                         createFolders: true
                     }).then(zip => {
                         let files = Object.keys(zip.files);
-                        let startTime = Date.now();
-                        Util.instance.log(`Entries read: ${files.length}`);
+                        this._logger.logInfo(`Entries read: ${files.length}`);
                         let extensions = new Set<string>();
                         files.forEach(entry => {
                             let file = zip.files[entry];
-                            Util.instance.log(`Entry ${file.name}`);
+                            this._logger.logDebug("ParseVsix", `Entry ${file.name}`);
                             if (!file.dir) {
                                 let extension = path.extname(file.name);
                                 extensions.add(extension);
@@ -159,10 +156,6 @@ export class VsixOutlineProvider implements vscode.TreeDataProvider<VsixItem> {
                                 return v && v.length > 0;
                             });
                             that.buildTree(root, pathArray, file.dir, 0);
-                        });
-                        TelemetryClient.instance.sendEvent("vsixParsingTime", {
-                            ["fileExtensions"]: [...extensions].join(","),
-                            ["totalSecondsParsing"]: ((Date.now() - startTime) / 1000).toString()
                         });
                         resolve(root);
                     });

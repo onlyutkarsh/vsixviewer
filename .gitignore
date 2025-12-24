@@ -1,5 +1,6 @@
 out/
 dist/
+.claude/
 
 # Logs
 logs
