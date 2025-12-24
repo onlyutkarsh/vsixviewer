@@ -2,7 +2,7 @@
 	"name": "vsix-viewer",
 	"displayName": "VSIX Viewer",
 	"description": "A simple viewer for VSIX files",
-	"version": "0.0.1",
+	"version": "2.0.0",
 	"publisher": "onlyutkarsh",
 	"author": {
 		"name": "Utkarsh Shigihalli"
@@ -123,6 +123,7 @@
 		"@typescript-eslint/eslint-plugin": "^8.19.1",
 		"@typescript-eslint/parser": "^8.19.1",
 		"@vscode/vsce": "^3.7.1",
+		"conventional-changelog-cli": "^5.0.0",
 		"esbuild": "^0.27.1",
 		"eslint": "^9.17.0",
 		"glob": "^13.0.0",
