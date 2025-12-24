@@ -29,44 +29,79 @@
 		"extension"
 	],
 	"license": "MIT",
-	"activationEvents": [
-		"onCommand:vsixViewer.showInVSIXViewer"
-	],
+	"activationEvents": [],
 	"main": "./out/extension",
 	"contributes": {
 		"commands": [
 			{
-				"command": "vsixViewer.showInVSIXViewer",
-				"title": "Show in VSIX Viewer",
-				"when": "resourceScheme == file && resourceExtname == .vsix"
+				"command": "vsixViewer.openFile",
+				"title": "Open File from VSIX"
+			},
+			{
+				"command": "vsixViewer.refresh",
+				"title": "Refresh VSIX Files",
+				"icon": "$(refresh)"
 			}
 		],
 		"menus": {
-			"explorer/context": [
+			"view/title": [
 				{
-					"command": "vsixViewer.showInVSIXViewer",
-					"when": "resourceScheme == file && resourceExtname == .vsix"
+					"command": "vsixViewer.refresh",
+					"when": "view == vsixViewer",
+					"group": "navigation"
 				}
 			],
 			"commandPalette": [
 				{
-					"command": "vsixViewer.showInVSIXViewer",
-					"when": "1 == 2"
+					"command": "vsixViewer.openFile",
+					"when": "false"
+				},
+				{
+					"command": "vsixViewer.refresh"
+				}
+			]
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "vsix-viewer-container",
+					"title": "VSIX Viewer",
+					"icon": "images/light/vsix.svg"
 				}
 			]
 		},
 		"views": {
-			"explorer": [
+			"vsix-viewer-container": [
 				{
 					"id": "vsixViewer",
-					"name": "VSIX Viewer"
+					"name": "VSIX Files",
+					"when": "vsixViewer.hasFiles",
+					"icon": "images/light/vsix.svg"
+				},
+				{
+					"id": "vsixViewer.welcome",
+					"name": "VSIX Files",
+					"when": "!vsixViewer.hasFiles",
+					"icon": "images/light/vsix.svg"
 				}
 			]
 		},
+		"viewsWelcome": [
+			{
+				"view": "vsixViewer.welcome",
+				"contents": "No VSIX files found in workspace.\n[Refresh](command:vsixViewer.refresh)\nVSIX files are automatically detected when you open a workspace containing them."
+			}
+		],
 		"configuration": {
 			"type": "object",
 			"title": "VSIX Viewer",
-			"properties": {}
+			"properties": {
+				"vsixViewer.showBadge": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show badge with count of VSIX files in workspace"
+				}
+			}
 		}
 	},
 	"scripts": {
