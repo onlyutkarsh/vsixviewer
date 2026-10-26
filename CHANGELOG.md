@@ -1,4 +1,13 @@
-# [2.0.0](https://github.com/onlyutkarsh/vsixviewer/compare/1.0.2...2.0.0) (2025-12-24)
+## [2.0.1](https://github.com/onlyutkarsh/vsixviewer/compare/v2.0.0...v2.0.1) (2026-10-26)
+
+
+### Bug Fixes
+
+* update release workflow run-name format and replace icon image ([0f035ae](https://github.com/onlyutkarsh/vsixviewer/commit/0f035ae3701e947a06237c88c0d444e829e73b44))
+
+
+
+# [2.0.0](https://github.com/onlyutkarsh/vsixviewer/compare/1.0.2...v2.0.0) (2025-12-24)
 
 
 ### Bug Fixes
