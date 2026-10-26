@@ -8,7 +8,7 @@ on:
         required: true
         type: string
 
-run-name: Release v${{ inputs.version }}
+run-name: v${{ inputs.version }}
 
 jobs:
   release:
